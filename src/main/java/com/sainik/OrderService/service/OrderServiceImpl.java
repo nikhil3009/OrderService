@@ -1,6 +1,7 @@
 package com.sainik.OrderService.service;
 
 import com.sainik.OrderService.entity.Order;
+import com.sainik.OrderService.external.client.ProductService;
 import com.sainik.OrderService.model.OrderRequest;
 import com.sainik.OrderService.repository.OrderRepository;
 import lombok.extern.log4j.Log4j2;
@@ -14,9 +15,12 @@ import java.time.Instant;
 public class OrderServiceImpl implements OrderService{
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private ProductService productService;
     @Override
     public long placeOrder(OrderRequest orderRequest) {
         log.info("placing order:",orderRequest);
+        productService.reduceQuantity(orderRequest.getProductId(),orderRequest.getQuantity());
         Order order = Order.builder().amount(orderRequest.getTotalAmount()).orderStatus("CREATED").productId(orderRequest.getProductId())
                 .orderDate(Instant.now()).quantity(orderRequest.getQuantity()).build();
 
